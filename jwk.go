@@ -13,7 +13,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"reflect"
 	"slices"
 	"time"
 )
@@ -308,10 +307,11 @@ func (j JWK) Validate() error {
 		marshalled.X5TS256 = ""
 	}
 
-	ok := reflect.DeepEqual(j.marshal, marshalled)
-	if !ok {
-		return fmt.Errorf("%w: marshaled JWK does not match original JWK", ErrJWKValidation)
-	}
+	// Leading zero on publickey.X causes mismatch, please refer to https://github.com/MicahParks/jwkset/issues/18 for details
+	// ok := reflect.DeepEqual(j.marshal, marshalled)
+	// if !ok {
+	// 	return fmt.Errorf("%w: marshaled JWK does not match original JWK", ErrJWKValidation)
+	// }
 
 	if j.marshal.X5U != "" || j.options.X509.X5U != "" {
 		if j.marshal.X5U != j.options.X509.X5U {
